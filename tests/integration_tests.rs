@@ -20,12 +20,9 @@ async fn setup_registry() -> anyhow::Result<()> {
         .args(["stop", DOCKER_CONTAINER_NAME])
         .status()
     {
-        Ok(status) if !status.success() => {
-            anyhow::bail!("Failed to stop existing docker container");
-        }
         Ok(_) => {}
         Err(e) => {
-            anyhow::bail!("Failed to stop docker container on cleanup: {}", e);
+            anyhow::bail!("Failed to run cleanup step: {}", e);
         }
     };
     let status = std::process::Command::new("docker")
