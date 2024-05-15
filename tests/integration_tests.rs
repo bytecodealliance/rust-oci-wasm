@@ -3,7 +3,7 @@ use oci_distribution::{
     client::{ClientConfig, ClientProtocol},
     errors::OciDistributionError,
 };
-use rust_oci_wasm::{
+use oci_wasm::{
     Component, WasmClient, WasmConfig, COMPONENT_OS, WASM_ARCHITECTURE, WASM_LAYER_MEDIA_TYPE,
     WASM_MANIFEST_CONFIG_MEDIA_TYPE, WASM_MANIFEST_MEDIA_TYPE,
 };

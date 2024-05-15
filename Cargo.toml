@@ -10,10 +10,14 @@ keywords = ["wasm", "oci", "webassembly"]
 [badges]
 maintenance = { status = "actively-developed" }
 
+[features]
+default = ["oci-distribution/native-tls"]
+rustls-tls = ["oci-distribution/rustls-tls"]
+
 [dependencies]
 anyhow = "1"
 chrono = { version = "0.4", features = ["serde"] }
-oci-distribution = "0.11"
+oci-distribution = { version = "0.11", default-features = false }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 sha2 = "0.10"
