@@ -2,6 +2,13 @@
 name = "rust-oci-wasm"
 version = "0.1.0"
 edition = "2021"
+authors = ["Taylor Thomas <taylor@oftaylor.com>"]
+description = "A crate containing a thin wrapper around the oci-distribution crate that implements types and methods for pulling and pushing Wasm to OCI registries"
+license-file = "LICENSE"
+keywords = ["wasm", "oci", "webassembly"]
+
+[badges]
+maintenance = { status = "actively-developed" }
 
 [dependencies]
 anyhow = "1"
