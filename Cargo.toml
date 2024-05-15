@@ -1,5 +1,5 @@
 [package]
-name = "rust-oci-wasm"
+name = "oci-wasm"
 version = "0.1.0"
 edition = "2021"
 authors = ["Taylor Thomas <taylor@oftaylor.com>"]
