@@ -4,7 +4,7 @@ mod config;
 
 pub use client::WasmClient;
 pub use component::Component;
-pub use config::WasmConfig;
+pub use config::{ToConfig, WasmConfig};
 
 pub const WASM_MANIFEST_MEDIA_TYPE: &str = "application/vnd.oci.image.manifest.v1+json";
 pub const WASM_MANIFEST_CONFIG_MEDIA_TYPE: &str = "application/vnd.wasm.config.v0+json";
