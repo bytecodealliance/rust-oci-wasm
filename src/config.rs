@@ -2,15 +2,13 @@ use std::collections::HashMap;
 
 use anyhow::Context;
 use chrono::{DateTime, Utc};
-use oci_distribution::{
-    client::{Config, ImageLayer},
-    manifest::WASM_LAYER_MEDIA_TYPE,
-};
+use oci_distribution::client::{Config, ImageLayer};
 use serde::{Deserialize, Serialize};
 use sha2::Digest;
 
 use crate::{
-    Component, COMPONENT_OS, MODULE_OS, WASM_ARCHITECTURE, WASM_MANIFEST_CONFIG_MEDIA_TYPE,
+    Component, COMPONENT_OS, MODULE_OS, WASM_ARCHITECTURE, WASM_LAYER_MEDIA_TYPE,
+    WASM_MANIFEST_CONFIG_MEDIA_TYPE,
 };
 
 // A convenience trait that indicates a type can be converted into an OCI manifest config

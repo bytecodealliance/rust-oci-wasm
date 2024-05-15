@@ -8,7 +8,8 @@ use oci_distribution::{
 };
 
 use crate::{
-    config::ToConfig, WasmConfig, WASM_MANIFEST_CONFIG_MEDIA_TYPE, WASM_MANIFEST_MEDIA_TYPE,
+    config::ToConfig, WasmConfig, WASM_LAYER_MEDIA_TYPE, WASM_MANIFEST_CONFIG_MEDIA_TYPE,
+    WASM_MANIFEST_MEDIA_TYPE,
 };
 
 /// A light wrapper around the oci-distribution client to add support for the `application/wasm` type
@@ -53,7 +54,7 @@ impl WasmClient {
     pub async fn pull(&self, image: &Reference, auth: &RegistryAuth) -> anyhow::Result<ImageData> {
         let image_data = self
             .client
-            .pull(image, auth, vec![WASM_MANIFEST_MEDIA_TYPE])
+            .pull(image, auth, vec![WASM_LAYER_MEDIA_TYPE])
             .await?;
         if image_data.layers.len() > 1 {
             anyhow::bail!("Wasm components must have exactly one layer");
