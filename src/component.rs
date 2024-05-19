@@ -7,6 +7,7 @@ use wit_parser::{Resolve, WorldId, WorldKey};
 /// Information about the component in the manifest. This is generally synthesized from a
 /// component's world
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct Component {
     /// A list of all exports from the component
     pub exports: Vec<String>,

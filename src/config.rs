@@ -19,6 +19,7 @@ pub trait ToConfig {
 
 /// The config type struct for `application/wasm`
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct WasmConfig {
     /// The time when the config was created.
     pub created: DateTime<Utc>,
