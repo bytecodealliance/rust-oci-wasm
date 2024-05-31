@@ -56,7 +56,7 @@ impl WasmClient {
             .client
             .pull(image, auth, vec![WASM_LAYER_MEDIA_TYPE])
             .await?;
-        if image_data.layers.len() > 1 {
+        if image_data.layers.len() != 1 {
             anyhow::bail!("Wasm components must have exactly one layer");
         }
 
@@ -77,8 +77,8 @@ impl WasmClient {
         image: &Reference,
         auth: &RegistryAuth,
     ) -> anyhow::Result<(OciImageManifest, WasmConfig, String)> {
-        let (manifest, config, digest) = self.client.pull_manifest_and_config(image, auth).await?;
-        if manifest.layers.len() > 1 {
+        let (manifest, digest, config) = self.client.pull_manifest_and_config(image, auth).await?;
+        if manifest.layers.len() != 1 {
             anyhow::bail!("Wasm components must have exactly one layer");
         }
         if manifest.media_type.as_deref().unwrap_or_default() != WASM_MANIFEST_MEDIA_TYPE {
