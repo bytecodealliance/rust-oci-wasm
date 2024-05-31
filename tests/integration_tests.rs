@@ -100,29 +100,11 @@ async fn test_push_and_pull() {
         "Should have a manifest url in the response"
     );
 
-    // Now try to pull and make all the data is correct
-    let data = client
-        .pull(&image, &oci_distribution::secrets::RegistryAuth::Anonymous)
+    // Check that just pulling the manifest works and check the config
+    let (_, conf, _) = client
+        .pull_manifest_and_config(&image, &oci_distribution::secrets::RegistryAuth::Anonymous)
         .await
-        .expect("Should be able to pull component");
-    assert_eq!(
-        data.config.media_type, WASM_MANIFEST_CONFIG_MEDIA_TYPE,
-        "Should have the proper config media type"
-    );
-    assert_eq!(data.layers.len(), 1, "Should have exactly one layer");
-    assert_eq!(
-        data.layers[0].media_type, WASM_LAYER_MEDIA_TYPE,
-        "Should have the proper layer media type"
-    );
-    assert_eq!(
-        data.manifest
-            .expect("Should have manifest present")
-            .media_type
-            .expect("Must have media type"),
-        WASM_MANIFEST_MEDIA_TYPE,
-        "Should have the proper manifest media type"
-    );
-    let conf = WasmConfig::try_from(data.config.data).expect("Should be able to parse config");
+        .expect("Should be able to pull manifest and config");
     assert_eq!(
         conf.author.expect("Author should be set"),
         "Bugs Bunny",
@@ -166,6 +148,29 @@ async fn test_push_and_pull() {
     assert_eq!(
         imports, expected_imports,
         "Expected imports to match:\nGot: {imports:?}\nExpected:\n{expected_imports:?}"
+    );
+
+    // Now try to pull and make all the data is correct
+    let data = client
+        .pull(&image, &oci_distribution::secrets::RegistryAuth::Anonymous)
+        .await
+        .expect("Should be able to pull component");
+    assert_eq!(
+        data.config.media_type, WASM_MANIFEST_CONFIG_MEDIA_TYPE,
+        "Should have the proper config media type"
+    );
+    assert_eq!(data.layers.len(), 1, "Should have exactly one layer");
+    assert_eq!(
+        data.layers[0].media_type, WASM_LAYER_MEDIA_TYPE,
+        "Should have the proper layer media type"
+    );
+    assert_eq!(
+        data.manifest
+            .expect("Should have manifest present")
+            .media_type
+            .expect("Must have media type"),
+        WASM_MANIFEST_MEDIA_TYPE,
+        "Should have the proper manifest media type"
     );
 
     // As a sanity check, make sure we can still parse the bytes out (by loading a component)
