@@ -1,6 +1,6 @@
 [package]
 name = "oci-wasm"
-version = "0.0.3"
+version = "0.0.4"
 edition = "2021"
 authors = ["Taylor Thomas <taylor@oftaylor.com>"]
 description = "A crate containing a thin wrapper around the oci-distribution crate that implements types and methods for pulling and pushing Wasm to OCI registries"
