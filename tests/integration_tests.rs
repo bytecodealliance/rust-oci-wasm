@@ -76,7 +76,6 @@ async fn test_push_and_pull() {
 
     let (conf, component) = WasmConfig::from_component(
         "./tests/data/component.wasm",
-        None,
         Some("Bugs Bunny".to_string()),
     )
     .await
@@ -207,7 +206,7 @@ async fn pulling_non_wasm_should_fail() {
 
 #[tokio::test]
 async fn test_binary_wit_parse() {
-    let (conf, _) = WasmConfig::from_component("./tests/data/binary_wit.wasm", Some("proxy"), None)
+    let (conf, _) = WasmConfig::from_component("./tests/data/binary_wit.wasm", None)
         .await
         .expect("Should be able to parse binary wit");
 
@@ -220,30 +219,21 @@ async fn test_binary_wit_parse() {
         .component
         .expect("Should have component information set in config");
 
-    let expected_exports = vec!["wasi:http/incoming-handler@0.2.0".to_string()];
-    let expected_imports = vec![
-        "wasi:cli/stderr@0.2.0".to_string(),
-        "wasi:cli/stdin@0.2.0".to_string(),
-        "wasi:cli/stdout@0.2.0".to_string(),
-        "wasi:clocks/monotonic-clock@0.2.0".to_string(),
-        "wasi:clocks/wall-clock@0.2.0".to_string(),
-        "wasi:http/outgoing-handler@0.2.0".to_string(),
+    let mut expected_exports = vec![
+        "wasi:http/incoming-handler@0.2.0".to_string(),
         "wasi:http/types@0.2.0".to_string(),
-        "wasi:io/error@0.2.0".to_string(),
-        "wasi:io/poll@0.2.0".to_string(),
-        "wasi:io/streams@0.2.0".to_string(),
+        "wasi:http/outgoing-handler@0.2.0".to_string(),
+        "wasi:http/proxy@0.2.0".to_string(),
+        "wasi:http/imports@0.2.0".to_string(),
     ];
+    expected_exports.sort();
 
-    let exports = component_info.exports;
-    let mut imports = component_info.imports;
-    imports.sort();
+    let mut exports = component_info.exports;
+    exports.sort();
 
     assert_eq!(
         exports, expected_exports,
         "Expected exports to match:\nGot: {exports:?}\nExpected:\n{expected_exports:?}"
     );
-    assert_eq!(
-        imports, expected_imports,
-        "Expected imports to match:\nGot: {imports:?}\nExpected:\n{expected_imports:?}"
-    );
+    assert!(component_info.imports.is_empty(), "Should have no imports");
 }

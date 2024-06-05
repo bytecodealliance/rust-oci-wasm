@@ -50,28 +50,21 @@ pub struct AnnotatedWasmConfig<'a> {
 impl WasmConfig {
     /// A helper for loading a component from a file and returning the proper config and
     /// [`ImageLayer`]. The returned config will have the created time set to now and all other
-    /// fields set for a component. If you are loading a binary wit package component, the
-    /// `world_name` argument is required
+    /// fields set for a component.
     pub async fn from_component(
         path: impl AsRef<std::path::Path>,
-        world_name: Option<&str>,
         author: Option<String>,
     ) -> anyhow::Result<(Self, ImageLayer)> {
         let raw = tokio::fs::read(path).await.context("Unable to read file")?;
-        Self::from_raw_component(raw, world_name, author)
+        Self::from_raw_component(raw, author)
     }
 
     /// Same as [`WasmConfig::from_component`] but for raw component bytes
     pub fn from_raw_component(
         raw: Vec<u8>,
-        world_name: Option<&str>,
         author: Option<String>,
     ) -> anyhow::Result<(Self, ImageLayer)> {
-        let component = if let Some(world) = world_name {
-            Component::from_raw_wit_package(&raw, world)?
-        } else {
-            Component::from_raw_component(&raw)?
-        };
+        let component = Component::from_raw_component(&raw)?;
         let config = Self {
             created: Utc::now(),
             author,
@@ -125,6 +118,7 @@ impl WasmConfig {
     }
 
     /// Adds annotations to this [`WasmConfig`].
+    #[must_use]
     pub fn with_annotations(
         &'_ self,
         annotations: HashMap<String, String>,
