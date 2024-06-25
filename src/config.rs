@@ -18,7 +18,7 @@ pub trait ToConfig {
 }
 
 /// The config type struct for `application/wasm`
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct WasmConfig {
     /// The time when the config was created.
@@ -128,6 +128,10 @@ impl WasmConfig {
             annotations,
         }
     }
+
+    pub fn to_string_pretty(&self) -> anyhow::Result<String> {
+        serde_json::to_string_pretty(self).map_err(Into::into)
+    }
 }
 
 impl<'a> ToConfig for AnnotatedWasmConfig<'a> {
@@ -149,6 +153,13 @@ impl ToConfig for WasmConfig {
                 annotations: None,
             })
             .map_err(Into::into)
+    }
+}
+
+impl ToString for WasmConfig {
+    fn to_string(&self) -> String {
+        self.to_string_pretty()
+            .expect("ToString serialization failed")
     }
 }
 
