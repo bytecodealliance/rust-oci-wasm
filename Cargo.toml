@@ -1,9 +1,9 @@
 [package]
 name = "oci-wasm"
-version = "0.0.4"
+version = "0.0.5"
 edition = "2021"
 authors = ["Taylor Thomas <taylor@oftaylor.com>"]
-description = "A crate containing a thin wrapper around the oci-distribution crate that implements types and methods for pulling and pushing Wasm to OCI registries"
+description = "A crate containing a thin wrapper around the oci-client crate that implements types and methods for pulling and pushing Wasm to OCI registries"
 repository = "https://github.com/bytecodealliance/rust-oci-wasm"
 license-file = "LICENSE"
 keywords = ["wasm", "oci", "webassembly"]
@@ -12,13 +12,13 @@ keywords = ["wasm", "oci", "webassembly"]
 maintenance = { status = "actively-developed" }
 
 [features]
-default = ["oci-distribution/native-tls"]
-rustls-tls = ["oci-distribution/rustls-tls"]
+default = ["oci-client/native-tls"]
+rustls-tls = ["oci-client/rustls-tls"]
 
 [dependencies]
 anyhow = "1"
 chrono = { version = "0.4", features = ["serde"] }
-oci-distribution = { version = "0.11", default-features = false }
+oci-client = { version = "0.12", default-features = false }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 sha2 = "0.10"

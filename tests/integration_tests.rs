@@ -1,5 +1,5 @@
 use anyhow::Context;
-use oci_distribution::{
+use oci_client::{
     client::{ClientConfig, ClientProtocol},
     errors::OciDistributionError,
 };
@@ -45,7 +45,7 @@ async fn setup_registry() -> anyhow::Result<()> {
 }
 
 fn get_client() -> WasmClient {
-    let client = oci_distribution::Client::new(ClientConfig {
+    let client = oci_client::Client::new(ClientConfig {
         protocol: ClientProtocol::HttpsExcept(vec!["localhost:5001".to_string()]),
         // This makes sure for failure tests we always try to pull the linux image
         platform_resolver: Some(Box::new(|manifests| {
@@ -71,8 +71,7 @@ async fn test_push_and_pull() {
         .expect("Should be able to start docker registry");
     let client = get_client();
 
-    let image =
-        oci_distribution::Reference::try_from(format!("{REGISTRY_URL}/test/test:0.0.1")).unwrap();
+    let image = oci_client::Reference::try_from(format!("{REGISTRY_URL}/test/test:0.0.1")).unwrap();
 
     let (conf, component) = WasmConfig::from_component(
         "./tests/data/component.wasm",
@@ -83,7 +82,7 @@ async fn test_push_and_pull() {
     let resp = client
         .push(
             &image,
-            &oci_distribution::secrets::RegistryAuth::Anonymous,
+            &oci_client::secrets::RegistryAuth::Anonymous,
             component,
             conf,
             None,
@@ -101,7 +100,7 @@ async fn test_push_and_pull() {
 
     // Check that just pulling the manifest works and check the config
     let (_, conf, _) = client
-        .pull_manifest_and_config(&image, &oci_distribution::secrets::RegistryAuth::Anonymous)
+        .pull_manifest_and_config(&image, &oci_client::secrets::RegistryAuth::Anonymous)
         .await
         .expect("Should be able to pull manifest and config");
     assert_eq!(
@@ -151,7 +150,7 @@ async fn test_push_and_pull() {
 
     // Now try to pull and make all the data is correct
     let data = client
-        .pull(&image, &oci_distribution::secrets::RegistryAuth::Anonymous)
+        .pull(&image, &oci_client::secrets::RegistryAuth::Anonymous)
         .await
         .expect("Should be able to pull component");
     assert_eq!(
@@ -186,10 +185,10 @@ async fn pulling_non_wasm_should_fail() {
     let client = get_client();
     // Using an older wasmcloud image because otherwise the pull doesn't work due to platform
     // mismatch on things like a Mac. I tried this with an alpine image first ghcr.io/wasmcloud/component-echo-messaging:0.1.0
-    let image = oci_distribution::Reference::try_from("docker.io/library/alpine:3").unwrap();
+    let image = oci_client::Reference::try_from("docker.io/library/alpine:3").unwrap();
     // ImageData doesn't implement debug so we can't use `expect_err` here
     let err = match client
-        .pull(&image, &oci_distribution::secrets::RegistryAuth::Anonymous)
+        .pull(&image, &oci_client::secrets::RegistryAuth::Anonymous)
         .await
     {
         Ok(_) => panic!("Should not be able to pull non wasm component"),
