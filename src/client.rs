@@ -1,6 +1,6 @@
-use std::{collections::HashMap, ops::Deref};
+use std::{collections::BTreeMap, ops::Deref};
 
-use oci_distribution::{
+use oci_client::{
     client::{ImageData, ImageLayer, PushResponse},
     manifest::OciImageManifest,
     secrets::RegistryAuth,
@@ -107,7 +107,7 @@ impl WasmClient {
         auth: &RegistryAuth,
         component_layer: ImageLayer,
         config: impl ToConfig,
-        annotations: Option<HashMap<String, String>>,
+        annotations: Option<BTreeMap<String, String>>,
     ) -> anyhow::Result<PushResponse> {
         let layers = vec![component_layer];
         let config = config.to_config()?;

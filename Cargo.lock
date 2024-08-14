@@ -669,10 +669,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "oci-distribution"
-version = "0.11.0"
+name = "oci-client"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b95a2c51531af0cb93761f66094044ca6ea879320bccd35ab747ff3fcab3f422"
+checksum = "ce611137700c3ec179993d5357dddde194bd706690b361f2f6b9235d4e29830e"
 dependencies = [
  "bytes",
  "chrono",
@@ -695,11 +695,11 @@ dependencies = [
 
 [[package]]
 name = "oci-wasm"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
  "anyhow",
  "chrono",
- "oci-distribution",
+ "oci-client",
  "serde",
  "serde_json",
  "sha2",

@@ -1,8 +1,8 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 use anyhow::Context;
 use chrono::{DateTime, Utc};
-use oci_distribution::client::{Config, ImageLayer};
+use oci_client::client::{Config, ImageLayer};
 use serde::{Deserialize, Serialize};
 use sha2::Digest;
 
@@ -44,7 +44,7 @@ pub struct WasmConfig {
 
 pub struct AnnotatedWasmConfig<'a> {
     pub config: &'a WasmConfig,
-    pub annotations: HashMap<String, String>,
+    pub annotations: BTreeMap<String, String>,
 }
 
 impl WasmConfig {
@@ -121,7 +121,7 @@ impl WasmConfig {
     #[must_use]
     pub fn with_annotations(
         &'_ self,
-        annotations: HashMap<String, String>,
+        annotations: BTreeMap<String, String>,
     ) -> AnnotatedWasmConfig<'_> {
         AnnotatedWasmConfig {
             config: self,
