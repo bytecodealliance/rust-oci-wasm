@@ -7,46 +7,39 @@ use oci_wasm::{
     Component, WasmClient, WasmConfig, COMPONENT_OS, WASM_ARCHITECTURE, WASM_LAYER_MEDIA_TYPE,
     WASM_MANIFEST_CONFIG_MEDIA_TYPE, WASM_MANIFEST_MEDIA_TYPE,
 };
+use testcontainers::{core::WaitFor, runners::AsyncRunner, ContainerAsync, Image};
 
-const DOCKER_CONTAINER_NAME: &str = "rust-oci-wasm-test";
-const REGISTRY_URL: &str = "localhost:5001";
+const DOCKER_REGISTRY_PORT: u16 = 5000;
 
-// NOTE(thomastaylor312): Tried using `Drop` on a struct to cleanup the registry, but I don't think
-// it runs for statics. This just makes sure we only start the registry once
-static ONCE: tokio::sync::OnceCell<()> = tokio::sync::OnceCell::const_new();
-
-async fn setup_registry() -> anyhow::Result<()> {
-    match std::process::Command::new("docker")
-        .args(["stop", DOCKER_CONTAINER_NAME])
-        .status()
-    {
-        Ok(_) => {}
-        Err(e) => {
-            anyhow::bail!("Failed to run cleanup step: {}", e);
-        }
-    };
-    let status = std::process::Command::new("docker")
-        .args([
-            "run",
-            "--rm",
-            "--name",
-            DOCKER_CONTAINER_NAME,
-            "-d",
-            "-p",
-            "5001:5000",
-            "registry:2",
-        ])
-        .status()
-        .context("Failed to start docker registry")?;
-    if !status.success() {
-        return Err(anyhow::anyhow!("Failed to start docker registry"));
-    }
-    Ok(())
+#[derive(Default)]
+struct DockerRegistry {
+    _priv: (),
 }
 
-fn get_client() -> WasmClient {
+impl Image for DockerRegistry {
+    fn name(&self) -> &str {
+        "registry"
+    }
+
+    fn tag(&self) -> &str {
+        "2"
+    }
+
+    fn ready_conditions(&self) -> Vec<WaitFor> {
+        vec![WaitFor::message_on_stderr("listening on")]
+    }
+}
+
+async fn setup_registry() -> anyhow::Result<ContainerAsync<DockerRegistry>> {
+    DockerRegistry::default()
+        .start()
+        .await
+        .context("Failed to start docker registry")
+}
+
+fn setup_client(registry_address: String) -> WasmClient {
     let client = oci_client::Client::new(ClientConfig {
-        protocol: ClientProtocol::HttpsExcept(vec!["localhost:5001".to_string()]),
+        protocol: ClientProtocol::HttpsExcept(vec![registry_address]),
         // This makes sure for failure tests we always try to pull the linux image
         platform_resolver: Some(Box::new(|manifests| {
             manifests
@@ -65,13 +58,23 @@ fn get_client() -> WasmClient {
 
 #[tokio::test]
 async fn test_push_and_pull() {
-    let _ = ONCE
-        .get_or_try_init(setup_registry)
+    let registry = setup_registry()
         .await
         .expect("Should be able to start docker registry");
-    let client = get_client();
+    let registry_ip = registry
+        .get_host()
+        .await
+        .expect("Should be able to get ip for docker registry");
+    let registry_port = registry
+        .get_host_port_ipv4(DOCKER_REGISTRY_PORT)
+        .await
+        .expect("Should be able to get port for docker registry");
+    let registry_address = format!("{registry_ip}:{registry_port}");
 
-    let image = oci_client::Reference::try_from(format!("{REGISTRY_URL}/test/test:0.0.1")).unwrap();
+    let client = setup_client(registry_address.clone());
+
+    let image =
+        oci_client::Reference::try_from(format!("{registry_address}/test/test:0.0.1")).unwrap();
 
     let (conf, component) = WasmConfig::from_component(
         "./tests/data/component.wasm",
@@ -178,11 +181,19 @@ async fn test_push_and_pull() {
 
 #[tokio::test]
 async fn pulling_non_wasm_should_fail() {
-    let _ = ONCE
-        .get_or_try_init(setup_registry)
+    let registry = setup_registry()
         .await
         .expect("Should be able to start docker registry");
-    let client = get_client();
+    let registry_ip = registry
+        .get_host()
+        .await
+        .expect("Should be able to get ip for docker registry");
+    let registry_port = registry
+        .get_host_port_ipv4(DOCKER_REGISTRY_PORT)
+        .await
+        .expect("Should be able to get port for docker registry");
+
+    let client = setup_client(format!("{registry_ip}:{registry_port}"));
     // Using an older wasmcloud image because otherwise the pull doesn't work due to platform
     // mismatch on things like a Mac. I tried this with an alpine image first ghcr.io/wasmcloud/component-echo-messaging:0.1.0
     let image = oci_client::Reference::try_from("docker.io/library/alpine:3").unwrap();
