@@ -768,9 +768,9 @@ dependencies = [
 
 [[package]]
 name = "oci-client"
-version = "0.13.0"
+version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "53e050f8bab3f561aa5ab537e1a6ed24006d58b4ee93cd6bb2c0cb822726f306"
+checksum = "474675fdc023fbcc9dcf4782e938a3a1ae5fd469c728d8db40599bd25c77e1ba"
 dependencies = [
  "bytes",
  "chrono",
@@ -810,7 +810,7 @@ dependencies = [
 
 [[package]]
 name = "oci-wasm"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "chrono",
