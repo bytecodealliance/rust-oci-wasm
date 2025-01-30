@@ -130,7 +130,7 @@ impl WasmConfig {
     }
 }
 
-impl<'a> ToConfig for AnnotatedWasmConfig<'a> {
+impl ToConfig for AnnotatedWasmConfig<'_> {
     /// Generate a [`Config`] for this [`WasmConfig`]
     fn to_config(&self) -> anyhow::Result<Config> {
         let mut config = self.config.to_config()?;
