@@ -45,7 +45,7 @@ fn setup_client(registry_address: String) -> WasmClient {
             manifests
                 .iter()
                 .find(|entry| {
-                    entry.platform.as_ref().map_or(false, |platform| {
+                    entry.platform.as_ref().is_some_and(|platform| {
                         platform.os == "linux" && platform.architecture == "amd64"
                     })
                 })
