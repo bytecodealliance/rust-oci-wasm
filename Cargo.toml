@@ -23,8 +23,8 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 sha2 = "0.10"
 tokio = { version = "1", default-features = false, features = ["fs"] }
-wit-component = "0.230"
-wit-parser = "0.230"
+wit-component = "0.244.0"
+wit-parser = "0.244.0"
 
 [dev-dependencies]
 testcontainers = { version = "0.24", features = ["watchdog"] }
