@@ -3,6 +3,7 @@ use oci_client::{
     client::{ClientConfig, ClientProtocol},
     errors::OciDistributionError,
 };
+use oci_spec::image::{Arch, Os};
 use oci_wasm::{
     Component, WasmClient, WasmConfig, COMPONENT_OS, WASM_ARCHITECTURE, WASM_LAYER_MEDIA_TYPE,
     WASM_MANIFEST_CONFIG_MEDIA_TYPE, WASM_MANIFEST_MEDIA_TYPE,
@@ -46,7 +47,7 @@ fn setup_client(registry_address: String) -> WasmClient {
                 .iter()
                 .find(|entry| {
                     entry.platform.as_ref().is_some_and(|platform| {
-                        platform.os == "linux" && platform.architecture == "amd64"
+                        platform.os == Os::Linux && platform.architecture == Arch::Amd64
                     })
                 })
                 .map(|entry| entry.digest.clone())
