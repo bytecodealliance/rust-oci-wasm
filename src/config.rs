@@ -76,7 +76,7 @@ impl WasmConfig {
         Ok((
             config,
             ImageLayer {
-                data: raw,
+                data: raw.into(),
                 media_type: WASM_LAYER_MEDIA_TYPE.to_string(),
                 annotations: None,
             },
@@ -110,7 +110,7 @@ impl WasmConfig {
         Ok((
             config,
             ImageLayer {
-                data: raw,
+                data: raw.into(),
                 media_type: WASM_LAYER_MEDIA_TYPE.to_string(),
                 annotations: None,
             },
@@ -144,7 +144,7 @@ impl ToConfig for WasmConfig {
     fn to_config(&self) -> anyhow::Result<Config> {
         serde_json::to_vec(self)
             .map(|data| Config {
-                data,
+                data: data.into(),
                 media_type: WASM_MANIFEST_CONFIG_MEDIA_TYPE.to_string(),
                 annotations: None,
             })
