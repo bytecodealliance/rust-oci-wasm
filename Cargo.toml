@@ -27,5 +27,5 @@ wit-component = "0.251.0"
 wit-parser = "0.251.0"
 
 [dev-dependencies]
-oci-spec = "0.8"
+oci-spec = "0.9"
 testcontainers = { version = "0.26", features = ["watchdog"] }
