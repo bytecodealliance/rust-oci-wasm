@@ -188,5 +188,12 @@ impl TryFrom<&[u8]> for WasmConfig {
 }
 
 fn sha256_digest(bytes: &[u8]) -> String {
-    format!("sha256:{:x}", sha2::Sha256::digest(bytes))
+    use std::fmt::Write;
+    let digest = sha2::Sha256::digest(bytes);
+    let mut out = String::with_capacity("sha256:".len() + digest.len() * 2);
+    out.push_str("sha256:");
+    for byte in digest {
+        let _ = write!(out, "{byte:02x}");
+    }
+    out
 }
