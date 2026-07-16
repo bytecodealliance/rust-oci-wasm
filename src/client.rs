@@ -113,9 +113,10 @@ impl WasmClient {
         let config = config.to_config()?;
         let mut manifest = OciImageManifest::build(&layers, &config, annotations);
         manifest.media_type = Some(WASM_MANIFEST_MEDIA_TYPE.to_string());
-        self.client
+        let response = self
+            .client
             .push(image, &layers, config, auth, Some(manifest))
-            .await
-            .map_err(Into::into)
+            .await;
+        response.map_err(Into::into)
     }
 }
