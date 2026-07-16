@@ -33,7 +33,7 @@ pub struct WasmConfig {
     /// Eventually this will go away when we hit a 1.0 but we need it for now
     pub os: String,
     /// This field contains a list of digests of each of the layers from the manifest in the same
-    /// order as they are listed in the manfiest. This exists because we need to have a unique list
+    /// order as they are listed in the manifest. This exists because we need to have a unique list
     /// here so that the hash of the config (used as the ID) is unique every time
     /// (https://github.com/opencontainers/image-spec/pull/1173)
     pub layer_digests: Vec<String>,
