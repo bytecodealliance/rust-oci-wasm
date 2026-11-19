@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
 use anyhow::Context;
-use chrono::{DateTime, Utc};
+use jiff::Timestamp;
 use oci_client::client::{Config, ImageLayer};
 use serde::{Deserialize, Serialize};
 use sha2::Digest;
@@ -21,8 +21,8 @@ pub trait ToConfig {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct WasmConfig {
-    /// The time when the config was created.
-    pub created: DateTime<Utc>,
+    /// The time when the config was created, serialized as an RFC 3339 timestamp in UTC.
+    pub created: Timestamp,
     /// The optional name of the author of the config.
     pub author: Option<String>,
     /// The architecture of the artifact. This is always `wasm`.
@@ -66,7 +66,7 @@ impl WasmConfig {
     ) -> anyhow::Result<(Self, ImageLayer)> {
         let component = Component::from_raw_component(&raw)?;
         let config = Self {
-            created: Utc::now(),
+            created: Timestamp::now(),
             author,
             architecture: WASM_ARCHITECTURE.to_string(),
             os: COMPONENT_OS.to_string(),
@@ -100,7 +100,7 @@ impl WasmConfig {
         author: Option<String>,
     ) -> anyhow::Result<(Self, ImageLayer)> {
         let config = Self {
-            created: Utc::now(),
+            created: Timestamp::now(),
             author,
             architecture: WASM_ARCHITECTURE.to_string(),
             os: MODULE_OS.to_string(),
